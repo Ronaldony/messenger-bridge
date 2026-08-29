@@ -39,11 +39,12 @@ There is no application build or package manifest. Do not invent `npm run build`
 ```text
 python <skill-creator>/scripts/quick_validate.py skills/messenger-bridge
 npx skills add . --list
+python -m unittest discover -s tests -p "test_*.py"
 ```
 
 Syntax-check changed scripts and exercise only non-destructive, non-billable health paths. Routine tests must not send messages, create credentials, change permissions, expose tunnels, or consume paid quotas. A live end-to-end test requires explicit approval, an exact destination, one marker-bearing send, sanitized evidence, and separate cost approval when any step may be billable.
 
-Evaluate behavior changes against realistic cases: minimal-intent routing, missing adapters, ambiguous endpoints, unsupported payload fields, accepted-but-unverified delivery, and duplicate-send prevention. Claim success only from fresh command output or observable delivery evidence.
+Evaluate behavior changes against realistic cases: minimal-intent routing, missing adapters, ambiguous endpoints, unsupported payload fields, accepted-but-unverified delivery, and duplicate-send prevention. Role-validation tests must attribute failures to sender, receiver, or bridge and require all three roles to pass for an overall valid result. Claim success only from fresh command output or observable delivery evidence.
 
 ## Security and Contributions
 

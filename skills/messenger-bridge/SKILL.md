@@ -68,6 +68,12 @@ Never run an incompatible helper or claim that the skill itself supports only th
 - When no compatible adapter is ready, build a SetupPlan instead of stopping at "install an MCP" or asking the user to choose a tool by name.
 - Stop before sending if setup remains incomplete, authentication fails, a required role capability is unavailable, or the requested assurance level cannot be reached.
 
+## Role validation
+
+Validate sender, receiver, and bridge independently whenever an adapter or topology changes and whenever the user requests a test. A successful receiver call does not compensate for an unverified sender snapshot or an invalid bridge policy. Report each role's verdict and claim a validated BridgeRun only when all three pass.
+
+Use the least invasive validation layer that proves the requirement: offline contract validation first, read-only operational preflight second, and an explicitly authorized one-send end-to-end test only when live evidence is required. Read [references/validation.md](references/validation.md) for the role gates, evidence rules, deterministic validator, and live-test boundary.
+
 ## Define the BridgeSpec
 
 Resolve these fields before authorizing a BridgeRun:
