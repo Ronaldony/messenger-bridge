@@ -57,6 +57,8 @@ Use the actual Telegram send operation with the exact destination. Classify the 
 
 For an in-sender ChatGPT topology, select the Telegram app on that ChatGPT message; sending directly from Codex would bypass that selected topology. For an orchestrated topology, capture the completed ChatGPT response first and then use the authorized Telegram adapter. Record the returned Telegram message ID and timestamp when available.
 
+When using the ChatGPT browser composer, verify adapter routing from platform-semantic state rather than rendered text. An inline selection pill is strong evidence for an explicitly selected per-message plugin, while its absence is inconclusive when an established conversation can retain connected-tool context. Plain text containing an adapter name is never selection evidence, and assistant prose is not a tool result. If ChatGPT reports a safety block without a tool-call card, treat the exact cause as unconfirmed, perform receiver read-back, and read [the adapter-routing incident](../incidents/2026-08-29-chatgpt-plugin-selection-not-attached.md) before retrying.
+
 ## Local adapter recovery
 
 Installation does not prove connectivity. If Telegram tools return tunnel `404`, `429`, or unavailable errors, verify the local MCP endpoint and Secure MCP Tunnel readiness. When the installation paths are known, run:
