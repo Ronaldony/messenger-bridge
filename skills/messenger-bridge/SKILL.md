@@ -46,6 +46,21 @@ A sender requires `read` and `detect-completion`. A receiver requires `send`. Re
 
 Do not assume feature parity or invent missing operations. Replacing an adapter must preserve the BridgeSpec's required capabilities and policies; otherwise declare it incompatible before sending.
 
+## Operating-system portability
+
+Keep the messenger model, BridgeSpec, BridgeRun records, capability vocabulary, authorization boundaries, and assurance rules independent of the host operating system. Treat Windows, macOS, Linux, containers, and remote runtimes as deployment contexts, not as bridge semantics.
+
+Detect the current host OS, shell, architecture, and available runtimes before recommending setup or recovery commands. Do not make PowerShell, POSIX shell, `.exe` files, Windows path syntax, a package manager, or a service manager an implicit requirement of the skill.
+
+Prefer an adapter's platform-neutral protocol or documented CLI behavior when defining its contract. An OS-specific helper is allowed only as an optional implementation and must:
+
+- be clearly labeled and isolated under `scripts/adapters/<service>/<os>/`;
+- document its supported OS and runtime prerequisites;
+- preserve the same inputs, side effects, readiness checks, structured outputs, and stopping conditions as the platform-neutral adapter contract; and
+- have an equivalent supported path for other hosts, or cause the SetupPlan to report the compatibility gap and recommend a compatible adapter.
+
+Never run an incompatible helper or claim that the skill itself supports only the OS represented by an included script. Evaluate adapter compatibility for the user's actual host before installation, and keep machine-specific paths and credentials out of shared files.
+
 ## Adapter routing
 
 - When Telegram has either role, read [references/adapters/telegram.md](references/adapters/telegram.md) before setup, preflight, or recovery.

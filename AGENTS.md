@@ -8,7 +8,7 @@ This repository publishes the platform-neutral `messenger-bridge` Agent Skill. T
 - `agents/openai.yaml`: UI metadata and invocation policy; recheck it when scope or triggers change.
 - `references/environment-setup.md`: discovery and setup when no compatible adapter is ready.
 - `references/adapters/<service>.md`: service capabilities, authentication, endpoint rules, and authoritative sources.
-- `scripts/adapters/<service>/`: deterministic setup or recovery helpers.
+- `scripts/adapters/<service>/<os>/`: optional OS-specific setup or recovery helpers.
 
 Use progressive disclosure. Keep conditional details in references and link them from `SKILL.md`; do not duplicate them. Add an adapter reference only for a concrete bridge use case.
 
@@ -17,6 +17,8 @@ Use progressive disclosure. Keep conditional details in references and link them
 Model each directed connection as `sender -> bridge -> receiver`. Roles are contextual; represent bidirectional exchange as two BridgeSpecs. Judge adapters by actual capabilities (`read`, `detect-completion`, `send`, `delivery-receipt`, and `history-readback`), not product or package names.
 
 Preserve exact endpoint resolution, explicit payload transformations, assurance levels, and the single-send boundary. Do not silently add scheduled jobs, persistent monitoring, or background runtimes. Installation, authentication, permission changes, and live sends require applicable authorization.
+
+Keep the skill's domain model and adapter contracts OS-neutral. Treat the host OS as a discovered deployment constraint. Never make a PowerShell, POSIX shell, executable format, path convention, package manager, or service manager the only supported workflow. Isolate OS-specific helpers in a labeled `<os>/` directory, document their prerequisites and platform-neutral behavior contract, and provide a supported alternative or an explicit compatibility-gap SetupPlan for other hosts.
 
 ## Cost Control and Approval
 

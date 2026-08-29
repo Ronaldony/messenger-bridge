@@ -61,14 +61,20 @@ When using the ChatGPT browser composer, verify adapter routing from platform-se
 
 ## Local adapter recovery
 
-Installation does not prove connectivity. If Telegram tools return tunnel `404`, `429`, or unavailable errors, verify the local MCP endpoint and Secure MCP Tunnel readiness. When the installation paths are known, run:
+Installation does not prove connectivity. If Telegram tools return tunnel `404`, `429`, or unavailable errors, verify the local MCP endpoint and Secure MCP Tunnel readiness.
+
+The platform-neutral recovery contract is to start the reviewed `telegram-mcp` entrypoint with its configured Python environment, confirm its loopback TCP port is reachable, start the previously authorized secure tunnel profile, wait for the tunnel `/readyz` endpoint to return `ready`, and emit structured status without exposing secrets. Preserve the same bounded timeout and stop on an occupied-but-unhealthy port.
+
+The bundled PowerShell script is an optional Windows helper, not a requirement of the skill or Telegram adapter. Use it only after confirming a compatible Windows host and known installation paths:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass `
-  -File "<skill-directory>\scripts\adapters\telegram\start-stack.ps1" `
+  -File "<skill-directory>\scripts\adapters\telegram\windows\start-stack.ps1" `
   -TelegramMcpRoot "<telegram-mcp-root>" `
   -TunnelClientPath "<tunnel-client.exe>" `
   -TunnelProfile "<profile>"
 ```
+
+On macOS, Linux, or another runtime, use the adapter and tunnel projects' supported commands to implement the same recovery contract. If no supported path is verified for the current host, produce a SetupPlan that identifies the compatibility gap and recommends a compatible adapter instead of attempting to run or mechanically translate the PowerShell helper.
 
 Continue only when the local MCP port is reachable and the tunnel `/readyz` response is `ready`. Retry one read-only Telegram probe after recovery.

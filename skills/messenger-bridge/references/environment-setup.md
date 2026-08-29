@@ -30,6 +30,8 @@ Inspect in this order and stop when a healthy option satisfies the BridgeSpec:
 
 Use read-only health, identity, schema, and endpoint probes where available. Inspect whether credentials are configured without printing or reading their secret values. Map actual operations to `read`, `detect-completion`, `send`, `delivery-receipt`, and `history-readback` rather than trusting an installation name.
 
+Detect the host OS, architecture, shell, available runtimes, and service-management constraints before selecting an installation or recovery path. Treat OS-specific scripts as optional helpers, not as adapter requirements. If a helper does not support the current host, use the adapter's documented platform-neutral interface or select a compatible alternative; do not translate commands mechanically across shells.
+
 When the host catalog returns an unconnected plugin or connector, suggest only an exact service or capability match and explain the required connection action. Do not claim it is installed, connected, or sufficient until its connection and tool schema are verified. Continue any research and planning that does not depend on the connection.
 
 ## Research capability gaps
@@ -59,6 +61,7 @@ Create a platform reference under `references/adapters/<service>.md` only after 
 - capability and assurance mapping based on actual operations;
 - the smallest service-specific questions that may remain after discovery;
 - installation, authentication, permissions, and secret-handling boundaries;
+- supported operating systems and runtimes, plus the platform-neutral behavior contract for any OS-specific helper;
 - endpoint resolution, payload limits, verification, and retry behavior;
 - health checks and recovery steps; and
 - authoritative documentation and primary repository links that must be rechecked before setup.
@@ -71,7 +74,7 @@ Present the result at the user's level rather than dumping implementation choice
 
 1. **Interpreted goal**: what will be sent, from where, to which kind of destination, and for how long.
 2. **Environment findings**: working capabilities and the exact missing capability.
-3. **Recommendation**: one adapter and topology, with the decisive reason.
+3. **Recommendation**: one adapter and topology compatible with the detected host, with the decisive reason.
 4. **Fallback**: one materially different option and its tradeoff.
 5. **User action**: only irreducible choices, login steps, destination details, or approvals.
 6. **Validation**: health, identity, endpoint, capability, receipt, and read-back checks.
