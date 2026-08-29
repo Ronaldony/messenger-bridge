@@ -1,6 +1,6 @@
 ---
 name: messenger-bridge
-description: Design, execute, and verify an authorized message relay between exact conversational-service endpoints. Use when a user asks to connect, relay, or verify messages between Telegram, Discord, ChatGPT, or another ongoing conversation service through interchangeable adapters; supports one-shot and active-turn-monitored runs, not scheduled or persistent background operation.
+description: Discover, set up, execute, and verify an authorized message relay between exact conversational-service endpoints. Use when a user asks to connect or relay Telegram, Discord, ChatGPT, or another ongoing conversation service, even when they do not know which plugin, MCP server, connector, or API is required; supports one-shot and active-turn-monitored runs, not scheduled or persistent background operation.
 ---
 
 # Messenger Bridge
@@ -14,10 +14,23 @@ Reason about the sender, receiver, and bridge together before taking action:
 - **Sender**: the role that supplies a completed message snapshot.
 - **Receiver**: the role that accepts the authorized payload.
 - **Adapter**: a replaceable integration that declares what a messenger can do.
+- **SetupPlan**: the capability gaps, candidate adapters, recommended topology, required user actions, and validation steps needed before a bridge can run.
 - **BridgeSpec**: the directed relationship between one sender and one receiver, including mapping, transformation, authorization, verification, retry, and lifetime policies.
 - **BridgeRun**: one authorized execution of a BridgeSpec, including its source snapshot, effective payload, adapter results, evidence, timestamps, and outcome.
 
 Roles are contextual, not intrinsic to a service. The same adapter may satisfy either or both roles. Represent bidirectional exchange as two BridgeSpecs with reversed roles.
+
+## Lead from minimal intent
+
+Treat a service name as user intent, not as an adapter selection. A request such as "send the ChatGPT response to Telegram" identifies a likely sender, receiver, and direction; it does not require the user to know MCP, plugins, APIs, transports, or package names.
+
+1. Infer the known sender, receiver, direction, payload, and requested outcome. Default to a one-shot relay unless the user clearly asks for ongoing automation.
+2. Inspect available built-in tools, connected plugins or connectors, MCP servers, browser sessions, and known local adapters before asking the user for technical details.
+3. Map discovered operations to the adapter capabilities below and use a healthy compatible adapter without making the user choose its implementation.
+4. Ask only for facts that cannot be discovered safely, such as an ambiguous destination or whether a bot identity is acceptable when that changes the solution.
+5. If capabilities are missing, read [references/environment-setup.md](references/environment-setup.md), research current authoritative options, and present one recommended SetupPlan plus a fallback.
+
+Read-only discovery and research do not require setup authorization. Installation, authentication, credential creation, account or channel permission changes, persistent services, and live test sends require the applicable user approval. Combine related required actions into one concise request instead of asking about each implementation detail separately. Never ask the user to paste a token, session string, password, or login code into the conversation.
 
 ## Capability-based adapters
 
@@ -35,9 +48,10 @@ Do not assume feature parity or invent missing operations. Replacing an adapter 
 
 ## Adapter routing
 
-- When Telegram has either role, read [references/adapters/telegram.md](references/adapters/telegram.md) before preflight or recovery.
+- When Telegram has either role, read [references/adapters/telegram.md](references/adapters/telegram.md) before setup, preflight, or recovery.
 - For another messenger, read its adapter reference when present. Otherwise map its authoritative tool interface to the capability vocabulary above.
-- Stop before sending if an adapter is absent, authentication fails, a required role capability is unavailable, or the requested assurance level cannot be reached.
+- When no compatible adapter is ready, build a SetupPlan instead of stopping at "install an MCP" or asking the user to choose a tool by name.
+- Stop before sending if setup remains incomplete, authentication fails, a required role capability is unavailable, or the requested assurance level cannot be reached.
 
 ## Define the BridgeSpec
 
@@ -71,7 +85,7 @@ Persistent monitoring, background wakeups, scheduled relays, and automatic propa
 
 ## Preflight and records
 
-1. Validate adapter identity, endpoint resolution, role capabilities, authentication, and health.
+1. Confirm that any required SetupPlan is complete, then validate adapter identity, endpoint resolution, role capabilities, authentication, and health.
 2. Validate payload compatibility, completion and edit policies, marker placement, required assurance, and the single-send boundary.
 3. Respect the user's browser, profile, model, and service-mode choices. Reuse an existing signed-in tab when possible.
 4. Track UI endpoints with `S-###` and `R-###`. Track each execution as a `B-###` BridgeRun record, not as a browser tab. Store visible title, endpoint identifier, purpose, and outcome without rewriting a site's document title.
@@ -101,9 +115,14 @@ If the BridgeSpec requires a higher level than the adapter can provide, stop bef
 
 ## ChatGPT sender profile
 
-When ChatGPT is the sender, use the real ChatGPT browser conversation and the receiver app selected for that message. A direct receiver send from Codex bypasses this profile and does not prove the ChatGPT-origin path.
+When ChatGPT is the sender, use the real ChatGPT browser conversation and choose one topology in the BridgeSpec:
 
-Use `source-and-receiver` marker placement. Tell ChatGPT to:
+- **in-sender tool**: ChatGPT calls the receiver app selected for that message. A direct receiver send from Codex bypasses this topology and does not prove its ChatGPT tool-call path.
+- **orchestrated relay**: Codex captures the completed ChatGPT response, then invokes a separate receiver adapter. Use this when the user wants delivery but does not require ChatGPT itself to call the receiver tool.
+
+Prefer an already working in-sender tool. If none exists, do not force its installation when a lower-risk orchestrated relay satisfies the stated need. State the selected topology in the SetupPlan and do not switch it silently after authorization.
+
+For the in-sender topology, use `source-and-receiver` marker placement. Tell ChatGPT to:
 
 - complete the requested response and include the marker;
 - call the selected receiver adapter with the exact destination;
@@ -111,6 +130,6 @@ Use `source-and-receiver` marker placement. Tell ChatGPT to:
 - show the receiver tool result; and
 - avoid scheduled tasks.
 
-Wait for the final-response signal. Capture the visible completed ChatGPT response and visible receiver tool result as separate evidence. Use receiver history or search for `verified` assurance when available. If ChatGPT produces only prose, apply the single-correction rule.
+Wait for the final-response signal. For the in-sender topology, capture the visible completed ChatGPT response and visible receiver tool result as separate evidence. For the orchestrated topology, capture the completed response before constructing the effective payload. Use receiver history or search for `verified` assurance when available. If ChatGPT was required to call the tool but produces only prose, apply the single-correction rule.
 
 This skill cannot wake a Codex conversation after its active turn ends. Stop without another send when an endpoint, authorization, completion signal, accepted result, or required evidence is ambiguous, and report the affected BridgeRun stage.
