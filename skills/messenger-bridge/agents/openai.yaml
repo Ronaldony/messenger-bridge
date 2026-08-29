@@ -1,0 +1,7 @@
+interface:
+  display_name: "Messenger Bridge"
+  short_description: "Relay and verify ChatGPT responses across messengers"
+  default_prompt: "Use $messenger-bridge to send one ChatGPT response to an exact messenger destination and verify it end to end."
+
+policy:
+  allow_implicit_invocation: true

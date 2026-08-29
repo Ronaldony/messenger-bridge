@@ -1,9 +1,9 @@
 ---
-name: chatgpt-messenger-relay
+name: messenger-bridge
 description: Relay a completed ChatGPT web response through a selected messenger MCP app to an exact chat or channel, then verify the posted message from the current Codex session. Use for one-shot or live end-to-end ChatGPT-to-messenger verification, including Telegram and compatible platforms such as Discord when their send and read-back tools are available; do not use for scheduled jobs or background wakeups.
 ---
 
-# ChatGPT Messenger Relay
+# Messenger Bridge
 
 Use the real ChatGPT browser conversation and its selected messenger app for the send. A direct messenger send from Codex does not prove this workflow. Codex may use read-only messenger tools afterward to detect and verify the result.
 

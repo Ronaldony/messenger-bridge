@@ -8,7 +8,7 @@ param(
 
     [string] $TunnelProfile = "telegram",
     [string] $PythonPath,
-    [string] $RuntimeDirectory = (Join-Path $env:TEMP "chatgpt-telegram-relay"),
+    [string] $RuntimeDirectory = (Join-Path $env:TEMP "messenger-bridge"),
     [int] $McpPort = 8765,
     [int] $TunnelHealthPort = 8080,
     [ValidateRange(5, 120)]
