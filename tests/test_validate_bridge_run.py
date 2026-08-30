@@ -25,6 +25,8 @@ def valid_record() -> dict:
         "sender": {
             "adapter_id": "synthetic-source",
             "endpoint_id": "source-endpoint",
+            "endpoint_confirmed": True,
+            "endpoint_confirmation_evidence": "user confirmed displayed source session and endpoint",
             "capabilities": ["read", "detect-completion"],
             "healthy": True,
             "authenticated": True,
@@ -38,6 +40,8 @@ def valid_record() -> dict:
         "receiver": {
             "adapter_id": "synthetic-receiver",
             "endpoint_id": "receiver-endpoint",
+            "endpoint_confirmed": True,
+            "endpoint_confirmation_evidence": "user confirmed displayed destination session and endpoint",
             "capabilities": ["send", "delivery-receipt", "history-readback"],
             "healthy": True,
             "authenticated": True,
@@ -92,6 +96,19 @@ class ValidateBridgeRunTests(unittest.TestCase):
         self.assertIn("sender.capability.detect-completion", issue_codes(result, "sender"))
         self.assertIn("sender.completion_evidence.required", issue_codes(result, "sender"))
 
+    def test_sender_requires_user_endpoint_confirmation(self) -> None:
+        record = valid_record()
+        record["sender"]["endpoint_confirmed"] = False
+        record["sender"]["endpoint_confirmation_evidence"] = ""
+
+        result = VALIDATOR.validate_bridge_run(record)
+
+        self.assertFalse(result["roles"]["sender"]["valid"])
+        self.assertIn("sender.endpoint_confirmed.required", issue_codes(result, "sender"))
+        self.assertIn(
+            "sender.endpoint_confirmation_evidence.required", issue_codes(result, "sender")
+        )
+
     def test_receiver_requires_send_and_readback_capabilities(self) -> None:
         record = valid_record()
         record["receiver"]["capabilities"] = ["delivery-receipt"]
@@ -101,6 +118,19 @@ class ValidateBridgeRunTests(unittest.TestCase):
         self.assertFalse(result["roles"]["receiver"]["valid"])
         self.assertIn("receiver.capability.send", issue_codes(result, "receiver"))
         self.assertIn("receiver.capability.history-readback", issue_codes(result, "receiver"))
+
+    def test_receiver_requires_user_endpoint_confirmation(self) -> None:
+        record = valid_record()
+        record["receiver"]["endpoint_confirmed"] = False
+        record["receiver"]["endpoint_confirmation_evidence"] = ""
+
+        result = VALIDATOR.validate_bridge_run(record)
+
+        self.assertFalse(result["roles"]["receiver"]["valid"])
+        self.assertIn("receiver.endpoint_confirmed.required", issue_codes(result, "receiver"))
+        self.assertIn(
+            "receiver.endpoint_confirmation_evidence.required", issue_codes(result, "receiver")
+        )
 
     def test_bridge_rejects_lossless_mutation_and_duplicate_send(self) -> None:
         record = valid_record()

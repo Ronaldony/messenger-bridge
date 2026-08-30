@@ -1,7 +1,7 @@
 interface:
   display_name: "Messenger Bridge"
-  short_description: "Discover, set up, and bridge conversation services"
-  default_prompt: "Use $messenger-bridge to send a completed ChatGPT response to Telegram, discovering or proposing the safest compatible setup if no adapter is ready."
+  short_description: "Bridge user-confirmed conversation endpoints"
+  default_prompt: "Use $messenger-bridge to relay a completed ChatGPT response to Telegram. Discover safe compatible adapters, then show the exact ChatGPT session and Telegram channel and require my confirmation before reading or sending any message."
 
 policy:
   allow_implicit_invocation: true

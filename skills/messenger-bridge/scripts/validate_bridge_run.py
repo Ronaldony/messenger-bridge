@@ -73,6 +73,8 @@ def validate_bridge_run(record: Any) -> dict[str, Any]:
 
     sender_endpoint = require_text(sender, "endpoint_id", "sender")
     require_text(sender, "adapter_id", "sender")
+    require_true(sender, "endpoint_confirmed", "sender")
+    require_text(sender, "endpoint_confirmation_evidence", "sender")
     sender_caps = capabilities(sender, "sender")
     for capability in ("read", "detect-completion"):
         if capability not in sender_caps:
@@ -89,6 +91,8 @@ def validate_bridge_run(record: Any) -> dict[str, Any]:
 
     receiver_endpoint = require_text(receiver, "endpoint_id", "receiver")
     require_text(receiver, "adapter_id", "receiver")
+    require_true(receiver, "endpoint_confirmed", "receiver")
+    require_text(receiver, "endpoint_confirmation_evidence", "receiver")
     receiver_caps = capabilities(receiver, "receiver")
     if "send" not in receiver_caps:
         fail("receiver", "receiver.capability.send", "receiver requires send")
